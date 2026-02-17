@@ -86,7 +86,7 @@ def execute_command(cmd: str) -> str:
     Consider using secure_execute() for Python code execution instead.
     """
     # Log the command execution attempt
-    print(f"Agent is executing command ```{cmd.replace('`', '\')}```")
+    print(f"Agent is executing command ```{cmd.replace('`', \"'\")}```")
     
     # Basic security checks - block obviously dangerous commands
     dangerous_patterns = [
