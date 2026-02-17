@@ -31,13 +31,13 @@ def test_database_setup():
     
     with app.app_context():
         try:
-            # Ensure database directory exists
-            ensure_database_directory()
-            print("✅ Database directory created")
-            
             # Initialize database
             db = init_db(app)
             print("✅ Database initialized successfully")
+            
+            # Ensure database directory exists
+            ensure_database_directory()
+            print("✅ Database directory created")
             
             # Check if tables were created
             from sqlalchemy import inspect
