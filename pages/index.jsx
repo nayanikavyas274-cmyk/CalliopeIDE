@@ -10,6 +10,7 @@ import { FeatureCard } from "@/components/feature-card"
 import { CodePreview } from "@/components/code-preview"
 import { HeroImage } from "@/components/hero-image"
 import { LogoCloud } from "@/components/logo-cloud"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { TextReveal } from "@/components/text-reveal"
 import { cn } from "@/lib/utils"
 
@@ -31,13 +32,13 @@ export default function Home() {
     }, [])
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#0D1117] text-white overflow-hidden">
+        <div data-testid="home-shell" className="flex flex-col min-h-screen bg-background text-foreground overflow-hidden transition-colors duration-300">
             <GradientBackground />
 
             <header
                 className={cn(
                     "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-                    scrolled ? "bg-[#0D1117]/80 backdrop-blur-md border-b border-white/10" : "bg-transparent",
+                    scrolled ? "bg-background/80 backdrop-blur-md border-b border-border/70" : "bg-transparent",
                 )}
             >
                 <div className="mx-auto w-full flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -63,7 +64,7 @@ export default function Home() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3, delay: 0.1 * i }}
                             >
-                                <Link href={item.href} className="text-sm font-medium text-white/70 hover:text-white transition-colors">
+                                <Link href={item.href} className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors">
                                     {item.name}
                                 </Link>
                             </motion.div>
@@ -78,6 +79,9 @@ export default function Home() {
                     >
                         <Link href="https://github.com/aludyalu/chatterji" target="_blank" className="text-white/70 hover:text-[#9FEF00] transition-colors">
                             <Github className="size-4 sm:size-5" />
+                        <ThemeToggle />
+                        <Link href="https://github.com/aludyalu/chatterji" target="_blank" className="text-foreground/70 hover:text-emerald-600 dark:hover:text-[#9FEF00] transition-colors">
+                            <Github className="size-5" />
                             <span className="sr-only">GitHub</span>
                         </Link>
                         <Link href="/app">
@@ -99,6 +103,7 @@ export default function Home() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5 }}
                                 className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/90 text-xs sm:text-sm mb-4"
+                                className="theme-panel inline-flex items-center px-3 py-1 rounded-full border text-sm mb-4"
                             >
                                 <Terminal className="mr-2 h-4 w-4" /> Introducing Calliope IDE
                             </motion.div>
@@ -106,7 +111,7 @@ export default function Home() {
                             <TextReveal
                                 text="Power Smart Contract Development"
                                 className="text-5xl md:text-7xl font-bold tracking-tight"
-                                highlightClass="text-white"
+                                highlightClass="text-foreground"
                                 highlightWords={["Smart", "Contract", "Development"]}
                                 staggerDelay={0.015}
                             />
@@ -115,7 +120,7 @@ export default function Home() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.3 }}
-                                className="text-xl text-white/70 max-w-2xl mx-auto"
+                                className="text-xl text-foreground/70 max-w-2xl mx-auto"
                             >
                                 Build, test, and deploy Soroban smart contracts with our powerful development environment. Designed for
                                 developers who demand speed and precision.
@@ -136,7 +141,7 @@ export default function Home() {
                                 <Link href="https://cal.com/atharv777" target="_blank">
                                     <Button
                                         variant="outline"
-                                        className="h-12 px-6 border-white/10 text-white hover:bg-white/10 hover:border-white/20 hover:text-white group"
+                                        className="h-12 px-6 border-border/80 text-foreground hover:bg-accent hover:border-border hover:text-accent-foreground group"
                                     >
                                         Book a Demo
                                         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -156,10 +161,10 @@ export default function Home() {
                     </div>
                 </section>
 
-                <section className="border-t border-white/10 py-16 relative overflow-hidden">
+                <section className="border-t border-border/70 py-16 relative overflow-hidden">
                     <div className="mx-auto px-8 w-full">
                         <div className="text-center mb-10">
-                            <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider">
+                            <h2 className="text-sm font-medium text-foreground/50 uppercase tracking-wider">
                                 Trusted by leading blockchain teams
                             </h2>
                         </div>
@@ -184,7 +189,7 @@ export default function Home() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: 0.1 }}
-                                className="text-white/70 text-xl"
+                                className="text-foreground/70 text-xl"
                             >
                                 Our IDE combines powerful development tools with an intuitive interface, making smart contract
                                 development accessible to everyone.
@@ -207,8 +212,8 @@ export default function Home() {
                                 icon={<Database className="size-6" />}
                                 index={1}
                             >
-                                <div className="bg-[#0D1117]/80 border border-white/10 rounded-lg p-4 h-full">
-                                    <div className="flex items-center gap-2 mb-3 text-white/70 text-sm">
+                                <div className="theme-panel rounded-lg border p-4 h-full">
+                                    <div className="flex items-center gap-2 mb-3 text-foreground/70 text-sm">
                                         <div className="size-3 rounded-full bg-[#9FEF00]"></div>
                                         <span>All tests passing</span>
                                     </div>
@@ -220,11 +225,11 @@ export default function Home() {
                                             "✓ test_authorization (2.5ms)",
                                             "✓ test_error_handling (1.9ms)",
                                         ].map((line, i) => (
-                                            <div key={i} className="text-[#9FEF00]">
+                                            <div key={i} className="text-emerald-600 dark:text-[#9FEF00]">
                                                 {line}
                                             </div>
                                         ))}
-                                        <div className="mt-4 pt-2 border-t border-white/10 text-white/70">5 tests passed (11.6ms)</div>
+                                        <div className="mt-4 pt-2 border-t border-border/70 text-foreground/70">5 tests passed (11.6ms)</div>
                                     </div>
                                 </div>
                             </FeatureCard>
@@ -235,13 +240,13 @@ export default function Home() {
                                 icon={<Rocket className="size-6" />}
                                 index={2}
                             >
-                                <div className="bg-[#0D1117]/80 border border-white/10 rounded-lg p-4 h-full">
+                                <div className="theme-panel rounded-lg border p-4 h-full">
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
                                             <div className="text-sm font-medium">Deployment Target</div>
-                                            <div className="bg-[#9FEF00]/10 text-[#9FEF00] text-xs px-2 py-1 rounded">Testnet</div>
+                                            <div className="bg-[#9FEF00]/10 text-emerald-700 dark:text-[#9FEF00] text-xs px-2 py-1 rounded">Testnet</div>
                                         </div>
-                                        <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                                        <div className="w-full bg-foreground/10 h-2 rounded-full overflow-hidden">
                                             <motion.div
                                                 initial={{ width: "0%" }}
                                                 whileInView={{ width: "100%" }}
@@ -250,13 +255,13 @@ export default function Home() {
                                                 className="h-full bg-gradient-to-r from-[#9FEF00]/70 to-[#9FEF00]"
                                             ></motion.div>
                                         </div>
-                                        <div className="flex justify-between text-xs text-white/50">
+                                        <div className="flex justify-between text-xs text-foreground/50">
                                             <span>Compiling</span>
                                             <span>Optimizing</span>
                                             <span>Deploying</span>
                                             <span>Verifying</span>
                                         </div>
-                                        <div className="mt-4 pt-4 border-t border-white/10">
+                                        <div className="mt-4 pt-4 border-t border-border/70">
                                             <Link href="/app">
                                                 <Button className="w-full bg-[#9FEF00] text-black hover:bg-[#9FEF00]/80">
                                                     Deploy to Mainnet
@@ -273,7 +278,7 @@ export default function Home() {
                                 icon={<ExternalLink className="size-6" />}
                                 index={3}
                             >
-                                <div className="bg-[#0D1117]/80 border border-white/10 rounded-lg p-4 h-full">
+                                <div className="theme-panel rounded-lg border p-4 h-full">
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-2">
                                             <div className="size-6 rounded-full bg-[#9FEF00]/80 flex items-center justify-center text-xs font-medium text-black">
@@ -285,25 +290,25 @@ export default function Home() {
                                             <div className="size-6 rounded-full bg-[#9FEF00]/40 flex items-center justify-center text-xs font-medium text-black">
                                                 MN
                                             </div>
-                                            <div className="text-xs text-white/70 ml-2">3 collaborators online</div>
+                                            <div className="text-xs text-foreground/70 ml-2">3 collaborators online</div>
                                         </div>
-                                        <div className="bg-[#0D1117]/80 border border-white/10 rounded p-3 text-xs font-mono">
-                                            <div className="text-[#9FEF00]">// Added by Jane Doe - 2 minutes ago</div>
-                                            <div className="text-white mt-1">function transfer(to: Address, amount: u128) {"{"}</div>
-                                            <div className="text-white ml-4">
+                                        <div className="theme-editor-surface rounded border p-3 text-xs font-mono">
+                                            <div className="text-emerald-700 dark:text-[#9FEF00]">// Added by Jane Doe - 2 minutes ago</div>
+                                            <div className="text-foreground mt-1">function transfer(to: Address, amount: u128) {"{"}</div>
+                                            <div className="text-foreground ml-4">
                                                 if (amount {">"}this.balance) {"{"}
                                             </div>
-                                            <div className="text-white ml-8">throw new Error("Insufficient balance");</div>
-                                            <div className="text-white ml-4">{"}"}</div>
-                                            <div className="text-white">{"}"}</div>
+                                            <div className="text-foreground ml-8">throw new Error("Insufficient balance");</div>
+                                            <div className="text-foreground ml-4">{"}"}</div>
+                                            <div className="text-foreground">{"}"}</div>
                                         </div>
                                         <div className="flex justify-between items-center mt-2">
-                                            <div className="text-xs text-white/50">Last edit 2m ago</div>
+                                            <div className="text-xs text-foreground/50">Last edit 2m ago</div>
                                             <Link href="/app">
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="h-7 text-xs border-white/10 hover:bg-white/10 hover:text-white hover:border-white/20"
+                                                    className="h-7 text-xs border-border/80 hover:bg-accent hover:text-accent-foreground hover:border-border"
                                                 >
                                                     View Changes
                                                 </Button>
@@ -318,7 +323,7 @@ export default function Home() {
 
                 {/* Get Started Section */}
                 < section className="py-24 relative overflow-hidden" >
-                    <div className="absolute inset-0 bg-[#0D1117] opacity-50"></div>
+                    <div className="absolute inset-0 bg-background opacity-50"></div>
 
                     <div className="mx-auto px-8 w-full relative z-10">
                         <div className="max-w-3xl mx-auto text-center">
@@ -336,7 +341,7 @@ export default function Home() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: 0.1 }}
-                                className="text-white/70 text-xl mb-10"
+                                className="text-foreground/70 text-xl mb-10"
                             >
                                 Describe your smart contract idea, and our AI will generate a starter project for you.
                             </motion.p>
@@ -348,12 +353,12 @@ export default function Home() {
                                 transition={{ duration: 0.5, delay: 0.2 }}
                                 className="relative"
                             >
-                                <div className="absolute -inset-px bg-gradient-to-r from-white/5 to-white/5 rounded-xl opacity-50 blur-sm"></div>
-                                <div className="relative rounded-xl border border-white/10 bg-[#0D1117]/90 backdrop-blur-sm shadow-2xl overflow-hidden">
+                                <div className="absolute -inset-px theme-cta-overlay rounded-xl opacity-50 blur-sm"></div>
+                                <div data-testid="chat-surface" className="theme-panel relative rounded-xl border backdrop-blur-sm shadow-2xl overflow-hidden">
                                     <div className="p-6 relative">
                                         <form action="/api/generate" method="POST">
                                             <textarea
-                                                className="min-h-[200px] w-full rounded-md border border-white/10 bg-[#0D1117]/90 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white/20 focus:ring-1 focus:ring-white/10 focus-visible:outline-none transition-all duration-300"
+                                                className="theme-editor-surface min-h-[200px] w-full rounded-md border px-3 py-2 text-sm text-foreground placeholder:text-foreground/40 focus:border-border focus:ring-1 focus:ring-ring focus-visible:outline-none transition-all duration-300"
                                                 placeholder="Describe your Soroban smart contract idea or project requirements..."
                                                 name="prompt"
                                                 required
@@ -394,7 +399,7 @@ export default function Home() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: 0.1 }}
-                                className="text-white/70 text-xl max-w-2xl mx-auto"
+                                className="text-foreground/70 text-xl max-w-2xl mx-auto"
                             >
                                 Join thousands of developers who are building the future of blockchain with Calliope IDE.
                             </motion.p>
@@ -427,20 +432,20 @@ export default function Home() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: 0.1 * i }}
-                                    className="bg-[#0D1117]/80 border border-white/10 rounded-lg p-6 hover:border-white/20 transition-all duration-300 hover:bg-[#0D1117]"
+                                    className="theme-panel rounded-lg border p-6 hover:border-border transition-all duration-300 hover:bg-[hsl(var(--surface))]"
                                 >
                                     <div className="flex flex-col h-full">
                                         <div className="mb-4">
                                             {[1, 2, 3, 4, 5].map((star) => (
-                                                <span key={star} className="text-[#9FEF00]">
+                                                <span key={star} className="text-emerald-600 dark:text-[#9FEF00]">
                                                     ★
                                                 </span>
                                             ))}
                                         </div>
-                                        <p className="text-white/80 flex-1 mb-6">"{testimonial.quote}"</p>
+                                        <p className="text-foreground/80 flex-1 mb-6">"{testimonial.quote}"</p>
                                         <div>
                                             <div className="font-medium">{testimonial.author}</div>
-                                            <div className="text-sm text-white/50">{testimonial.role}</div>
+                                            <div className="text-sm text-foreground/50">{testimonial.role}</div>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -452,9 +457,9 @@ export default function Home() {
                 {/* CTA Section */}
                 <section className="py-24 relative overflow-hidden">
                     <div className="absolute inset-0">
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/5"></div>
-                        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                        <div className="absolute inset-0 theme-cta-overlay"></div>
+                        <div className="absolute top-0 left-0 right-0 h-px theme-divider-gradient"></div>
+                        <div className="absolute bottom-0 left-0 right-0 h-px theme-divider-gradient"></div>
                     </div>
 
                     <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
@@ -474,6 +479,7 @@ export default function Home() {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: 0.1 }}
                                 className="text-white/70 text-lg sm:text-xl mb-8 sm:mb-10 max-w-xl mx-auto"
+                                className="text-foreground/70 text-xl mb-10 max-w-xl mx-auto"
                             >
                                 Join thousands of developers building innovative smart contracts with Calliope IDE.
                             </motion.p>
@@ -494,6 +500,7 @@ export default function Home() {
                                     <Button
                                         variant="outline"
                                         className="w-full sm:w-auto h-10 sm:h-12 px-4 sm:px-6 border-white/10 text-white hover:bg-white/10 hover:border-white/20 hover:text-white group"
+                                        className="h-12 px-6 border-border/80 text-foreground hover:bg-accent hover:border-border hover:text-accent-foreground group"
                                     >
                                         Schedule a Demo
                                         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -505,7 +512,7 @@ export default function Home() {
                 </section>
             </main >
 
-            <footer className="border-t border-white/10 py-16 relative">
+            <footer className="border-t border-border/70 py-16 relative">
                 <div className="mx-auto px-8 w-full">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
                         <div>
@@ -513,7 +520,7 @@ export default function Home() {
                             <ul className="space-y-2">
                                 {["Features", "Pricing", "Roadmap", "Changelog"].map((item) => (
                                     <li key={item}>
-                                        <Link href="#" className="text-sm text-white/50 hover:text-white transition-colors">
+                                        <Link href="#" className="text-sm text-foreground/50 hover:text-foreground transition-colors">
                                             {item}
                                         </Link>
                                     </li>
@@ -525,7 +532,7 @@ export default function Home() {
                             <ul className="space-y-2">
                                 {["Documentation", "Guides", "API Reference", "Examples"].map((item) => (
                                     <li key={item}>
-                                        <Link href="#" className="text-sm text-white/50 hover:text-white transition-colors">
+                                        <Link href="#" className="text-sm text-foreground/50 hover:text-foreground transition-colors">
                                             {item}
                                         </Link>
                                     </li>
@@ -537,7 +544,7 @@ export default function Home() {
                             <ul className="space-y-2">
                                 {["About", "Blog", "Careers", "Contact"].map((item) => (
                                     <li key={item}>
-                                        <Link href="#" className="text-sm text-white/50 hover:text-white transition-colors">
+                                        <Link href="#" className="text-sm text-foreground/50 hover:text-foreground transition-colors">
                                             {item}
                                         </Link>
                                     </li>
@@ -549,7 +556,7 @@ export default function Home() {
                             <ul className="space-y-2">
                                 {["Privacy", "Terms", "Security", "Cookies"].map((item) => (
                                     <li key={item}>
-                                        <Link href="#" className="text-sm text-white/50 hover:text-white transition-colors">
+                                        <Link href="#" className="text-sm text-foreground/50 hover:text-foreground transition-colors">
                                             {item}
                                         </Link>
                                     </li>
@@ -558,12 +565,12 @@ export default function Home() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/10">
+                    <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-border/70">
                         <div className="flex items-center gap-2 mb-4 md:mb-0">
                             <img src="logo.svg" alt="Calliope" className="h-[35px]" />
                         </div>
 
-                        <div className="text-sm text-white/50">
+                        <div className="text-sm text-foreground/50">
                             &copy; {new Date().getFullYear()} Calliope IDE. All rights reserved.
                         </div>
                     </div>

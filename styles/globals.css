@@ -46,7 +46,7 @@ textarea {
     all: unset;
     width: 100%;
     height: 100%;
-    background-color: #1c1c1c;
+  background-color: hsl(var(--editor-surface));
     color: inherit;
     font: inherit;
     line-height: inherit;
@@ -93,13 +93,13 @@ textarea {
   }
 
 pre {
-  color: white !important;
-  background-color: #1c1c1c !important;
+  color: hsl(var(--editor-foreground)) !important;
+  background-color: hsl(var(--editor-surface)) !important;
   margin-top: 14px !important;
 }
 
 .markdown-body {
-  color: white !important;
+  color: hsl(var(--foreground)) !important;
 }
 
 li {
@@ -135,6 +135,24 @@ li {
         --chart-4: 43 74% 66%;
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
+        --surface: 0 0% 100%;
+        --surface-strong: 210 25% 96%;
+        --surface-foreground: 222 47% 11%;
+        --surface-muted-foreground: 215 16% 38%;
+        --panel-border: 214 18% 84%;
+        --editor-surface: 210 33% 98%;
+        --editor-foreground: 222 47% 11%;
+        --sidebar-surface: 210 30% 96%;
+        --chat-surface: 210 30% 97%;
+        --code-line-number: 215 14% 56%;
+        --code-line-highlight: 210 40% 94%;
+        --theme-accent: 142 72% 28%;
+        --backdrop-rgb: 245 247 250;
+        --backdrop-shadow-rgb: 214 219 229;
+        --canvas-glow-primary: rgba(37, 99, 235, 0.08);
+        --canvas-glow-secondary: rgba(16, 185, 129, 0.06);
+        --canvas-glow-pointer: rgba(15, 23, 42, 0.05);
+        --canvas-grid: rgba(15, 23, 42, 0.05);
     }
   .dark {
         --background: 0 0% 3.9%;
@@ -161,7 +179,87 @@ li {
         --chart-3: 30 80% 55%;
         --chart-4: 280 65% 60%;
         --chart-5: 340 75% 55%;
+        --surface: 222 47% 8%;
+        --surface-strong: 222 28% 12%;
+        --surface-foreground: 0 0% 98%;
+        --surface-muted-foreground: 0 0% 70%;
+        --panel-border: 217 19% 18%;
+        --editor-surface: 222 47% 9%;
+        --editor-foreground: 0 0% 98%;
+        --sidebar-surface: 222 33% 11%;
+        --chat-surface: 222 35% 12%;
+        --code-line-number: 0 0% 45%;
+        --code-line-highlight: 222 20% 15%;
+        --theme-accent: 83 100% 47%;
+        --backdrop-rgb: 13 17 23;
+        --backdrop-shadow-rgb: 13 17 23;
+        --canvas-glow-primary: rgba(255, 255, 255, 0.02);
+        --canvas-glow-secondary: rgba(255, 255, 255, 0.01);
+        --canvas-glow-pointer: rgba(255, 255, 255, 0.02);
+        --canvas-grid: rgba(255, 255, 255, 0.01);
     }
+}
+
+
+
+@layer components {
+  .theme-panel {
+    background-color: hsl(var(--surface) / 0.86);
+    border-color: hsl(var(--panel-border) / 0.88);
+    color: hsl(var(--surface-foreground));
+  }
+
+  .theme-panel-strong {
+    background-color: hsl(var(--surface-strong) / 0.9);
+    border-color: hsl(var(--panel-border) / 0.88);
+    color: hsl(var(--surface-foreground));
+  }
+
+  .theme-sidebar-surface {
+    background-color: hsl(var(--sidebar-surface) / 0.92);
+    border-color: hsl(var(--panel-border) / 0.88);
+    color: hsl(var(--surface-foreground));
+  }
+
+  .theme-editor-surface {
+    background-color: hsl(var(--editor-surface) / 0.94);
+    border-color: hsl(var(--panel-border) / 0.88);
+    color: hsl(var(--editor-foreground));
+  }
+
+  .theme-chat-surface {
+    background-color: hsl(var(--chat-surface) / 0.92);
+    border-color: hsl(var(--panel-border) / 0.88);
+    color: hsl(var(--surface-foreground));
+  }
+
+  .theme-muted-text {
+    color: hsl(var(--surface-muted-foreground));
+  }
+
+  .theme-accent-text {
+    color: hsl(var(--theme-accent));
+  }
+
+  .theme-code-line-number {
+    color: hsl(var(--code-line-number));
+  }
+
+  .theme-cta-overlay {
+    background: linear-gradient(to right, hsl(var(--surface) / 0.03), hsl(var(--surface) / 0.08), hsl(var(--surface) / 0.03));
+  }
+
+  .theme-divider-gradient {
+    background: linear-gradient(to right, transparent, hsl(var(--panel-border) / 0.6), transparent);
+  }
+
+  .theme-radial-vignette {
+    background: radial-gradient(ellipse at center, transparent 0%, rgb(var(--backdrop-shadow-rgb)) 70%);
+  }
+
+  .theme-page-backdrop {
+    background: linear-gradient(to bottom, rgb(var(--backdrop-rgb)), rgb(var(--backdrop-rgb)), rgb(var(--backdrop-shadow-rgb)));
+  }
 }
 
 

@@ -3,12 +3,15 @@
 import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
 
+import { useTheme } from "@/components/theme-provider"
+
 export function CodePreview() {
     const [currentLine, setCurrentLine] = useState(0)
     const [isTyping, setIsTyping] = useState(false)
     const [typedText, setTypedText] = useState("")
     const typingIntervalRef = useRef()
     const cursorRef = useRef(null)
+    const { theme } = useTheme()
 
     const code = [
         "pub struct TokenContract {",
@@ -78,12 +81,12 @@ export function CodePreview() {
     }, [currentLine, typedText])
 
     return (
-        <div className="bg-[#0D1117]/80 border border-white/10 rounded-lg p-4 h-full font-mono text-sm overflow-hidden relative">
+        <div data-testid="code-preview-surface" className="theme-editor-surface rounded-lg border p-4 h-full font-mono text-sm overflow-hidden relative">
             <div className="flex items-center gap-2 mb-3">
                 <div className="size-3 rounded-full bg-red-500"></div>
                 <div className="size-3 rounded-full bg-yellow-500"></div>
                 <div className="size-3 rounded-full bg-green-500"></div>
-                <span className="text-white/50 text-xs ml-2">token_contract.rs</span>
+                <span className="theme-muted-text text-xs ml-2">token_contract.rs</span>
             </div>
 
             <div className="space-y-0.5 relative">
@@ -94,13 +97,13 @@ export function CodePreview() {
                         initial={{ opacity: 0.5 }}
                         animate={{
                             opacity: index === currentLine ? 1 : 0.5,
-                            color: index === currentLine ? "#fff" : "#aaa",
-                            backgroundColor: index === currentLine ? "rgba(255, 255, 255, 0.05)" : "transparent",
+                            color: index === currentLine ? (theme === "dark" ? "#ffffff" : "#111827") : (theme === "dark" ? "#b5b5b5" : "#4b5563"),
+                            backgroundColor: index === currentLine ? (theme === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(15, 23, 42, 0.06)") : "transparent",
                         }}
                         transition={{ duration: 0.3 }}
                         className="whitespace-pre rounded px-1"
                     >
-                        <span className="text-white/30 mr-4 select-none">{index + 1}</span>
+                        <span className="theme-code-line-number mr-4 select-none">{index + 1}</span>
                         {isTyping && index === currentLine ? typedText : line}
                     </motion.div>
                 ))}
@@ -108,7 +111,7 @@ export function CodePreview() {
                 {isTyping && (
                     <motion.div
                         ref={cursorRef}
-                        className="absolute h-5 w-[2px] bg-white"
+                        className="absolute h-5 w-[2px] bg-foreground"
                         animate={{ opacity: [1, 0, 1] }}
                         transition={{ duration: 0.8, repeat: Number.POSITIVE_INFINITY }}
                     />

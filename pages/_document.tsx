@@ -3,14 +3,34 @@ import clsx from "clsx";
 
 import { fontSans } from "@/config/fonts";
 
+const themeScript = `
+  (function () {
+    try {
+      var storageKey = "calliope-theme";
+      var storedTheme = window.localStorage.getItem(storageKey);
+      var theme = storedTheme === "light" || storedTheme === "dark" ? storedTheme : "dark";
+      var root = document.documentElement;
+      root.classList.toggle("dark", theme === "dark");
+      root.dataset.theme = theme;
+      root.style.colorScheme = theme;
+    } catch (error) {
+      document.documentElement.classList.add("dark");
+      document.documentElement.dataset.theme = "dark";
+      document.documentElement.style.colorScheme = "dark";
+    }
+  })();
+`;
+
 export default function Document() {
   return (
-    <Html lang="en">
-      <Head />
-      <title>Calliope</title>
+    <Html lang="en" suppressHydrationWarning>
+      <Head>
+        <title>Calliope</title>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </Head>
       <body
         className={clsx(
-          "dark min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-background text-foreground font-sans antialiased",
           fontSans.variable,
         )}
       >
