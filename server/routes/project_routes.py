@@ -5,8 +5,11 @@ from server.middleware.database import db
 from server.utils.auth_utils import token_required
 from server.utils.db_utils import create_project_metadata, update_project_metadata
 from server.utils.validators import sanitize_input
+import logging
+from server.utils.monitoring import capture_exception
 
 project_bp = Blueprint('project', __name__, url_prefix='/api/projects')
+logger = logging.getLogger(__name__)
 
 
 @project_bp.route('/', methods=['POST'])
@@ -52,7 +55,8 @@ def create_project(current_user):
     except ValueError as e:
         return jsonify({'success': False, 'error': str(e)}), 400
     except Exception as e:
-        print(f"Create project error: {str(e)}")
+        logger.exception("Create project error")
+        capture_exception(e, {'route': 'project.create_project', 'user_id': current_user.id})
         return jsonify({'success': False, 'error': 'An error occurred while creating the project'}), 500
 
 
@@ -94,7 +98,8 @@ def list_projects(current_user):
         }), 200
         
     except Exception as e:
-        print(f"List projects error: {str(e)}")
+        logger.exception("List projects error")
+        capture_exception(e, {'route': 'project.list_projects', 'user_id': current_user.id})
         return jsonify({'success': False, 'error': 'An error occurred while retrieving projects'}), 500
 
 
@@ -117,7 +122,8 @@ def get_project(current_user, project_id):
         }), 200
         
     except Exception as e:
-        print(f"Get project error: {str(e)}")
+        logger.exception("Get project error")
+        capture_exception(e, {'route': 'project.get_project', 'user_id': current_user.id, 'project_id': project_id})
         return jsonify({'success': False, 'error': 'An error occurred while retrieving the project'}), 500
 
 
@@ -167,7 +173,8 @@ def update_project(current_user, project_id):
     except ValueError as e:
         return jsonify({'success': False, 'error': str(e)}), 400
     except Exception as e:
-        print(f"Update project error: {str(e)}")
+        logger.exception("Update project error")
+        capture_exception(e, {'route': 'project.update_project', 'user_id': current_user.id, 'project_id': project_id})
         return jsonify({'success': False, 'error': 'An error occurred while updating the project'}), 500
 
 
@@ -194,7 +201,8 @@ def update_project_access(current_user, project_id):
         }), 200
         
     except Exception as e:
-        print(f"Update project access error: {str(e)}")
+        logger.exception("Update project access error")
+        capture_exception(e, {'route': 'project.update_project_access', 'user_id': current_user.id, 'project_id': project_id})
         return jsonify({'success': False, 'error': 'An error occurred while updating project access'}), 500
 
 
@@ -221,7 +229,8 @@ def deactivate_project(current_user, project_id):
         }), 200
         
     except Exception as e:
-        print(f"Deactivate project error: {str(e)}")
+        logger.exception("Deactivate project error")
+        capture_exception(e, {'route': 'project.deactivate_project', 'user_id': current_user.id, 'project_id': project_id})
         return jsonify({'success': False, 'error': 'An error occurred while deactivating the project'}), 500
 
 
@@ -241,7 +250,8 @@ def get_project_by_name(current_user, project_name):
         }), 200
         
     except Exception as e:
-        print(f"Get project by name error: {str(e)}")
+        logger.exception("Get project by name error")
+        capture_exception(e, {'route': 'project.get_project_by_name', 'user_id': current_user.id})
         return jsonify({'success': False, 'error': 'An error occurred while retrieving the project'}), 500
 
 
@@ -279,5 +289,6 @@ def get_project_types(current_user):
         }), 200
         
     except Exception as e:
-        print(f"Get project types error: {str(e)}")
+        logger.exception("Get project types error")
+        capture_exception(e, {'route': 'project.get_project_types', 'user_id': current_user.id})
         return jsonify({'success': False, 'error': 'An error occurred while retrieving project types'}), 500
