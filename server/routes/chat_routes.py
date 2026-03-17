@@ -8,8 +8,11 @@ from server.utils.db_utils import (
     get_session_chat_history,
     get_session_by_id
 )
+import logging
+from server.utils.monitoring import capture_exception
 
 chat_bp = Blueprint('chat', __name__, url_prefix='/api/chat')
+logger = logging.getLogger(__name__)
 
 
 @chat_bp.route('/message', methods=['POST'])
@@ -64,7 +67,8 @@ def send_message(current_user):
     except ValueError as e:
         return jsonify({'success': False, 'error': str(e)}), 400
     except Exception as e:
-        print(f"Send message error: {str(e)}")
+        logger.exception("Send message error")
+        capture_exception(e, {'route': 'chat.send_message', 'user_id': current_user.id})
         return jsonify({'success': False, 'error': 'An error occurred while saving the message'}), 500
 
 
@@ -103,7 +107,8 @@ def get_chat_history(current_user, session_id):
     except ValueError as e:
         return jsonify({'success': False, 'error': str(e)}), 400
     except Exception as e:
-        print(f"Get chat history error: {str(e)}")
+        logger.exception("Get chat history error")
+        capture_exception(e, {'route': 'chat.get_chat_history', 'user_id': current_user.id, 'session_id': session_id})
         return jsonify({'success': False, 'error': 'An error occurred while retrieving chat history'}), 500
 
 
@@ -134,7 +139,8 @@ def get_recent_messages(current_user, session_id):
     except ValueError as e:
         return jsonify({'success': False, 'error': str(e)}), 400
     except Exception as e:
-        print(f"Get recent messages error: {str(e)}")
+        logger.exception("Get recent messages error")
+        capture_exception(e, {'route': 'chat.get_recent_messages', 'user_id': current_user.id, 'session_id': session_id})
         return jsonify({'success': False, 'error': 'An error occurred while retrieving recent messages'}), 500
 
 
@@ -179,7 +185,8 @@ def get_user_chat_sessions(current_user):
         }), 200
         
     except Exception as e:
-        print(f"Get user sessions error: {str(e)}")
+        logger.exception("Get user sessions error")
+        capture_exception(e, {'route': 'chat.get_user_chat_sessions', 'user_id': current_user.id})
         return jsonify({'success': False, 'error': 'An error occurred while retrieving sessions'}), 500
 
 
@@ -202,5 +209,6 @@ def deactivate_chat_session(current_user, session_id):
         }), 200
         
     except Exception as e:
-        print(f"Deactivate session error: {str(e)}")
+        logger.exception("Deactivate session error")
+        capture_exception(e, {'route': 'chat.deactivate_chat_session', 'user_id': current_user.id, 'session_id': session_id})
         return jsonify({'success': False, 'error': 'An error occurred while deactivating the session'}), 500

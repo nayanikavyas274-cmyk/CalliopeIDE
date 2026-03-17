@@ -16,8 +16,11 @@ from server.utils.validators import (
     validate_password
 )
 from datetime import datetime
+import logging
+from server.utils.monitoring import capture_exception
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
+logger = logging.getLogger(__name__)
 
 
 @auth_bp.route('/register', methods=['POST'])
@@ -65,7 +68,8 @@ def register():
         
     except Exception as e:
         db.session.rollback()
-        print(f"Registration error: {str(e)}")
+        logger.exception("Registration error")
+        capture_exception(e, {'route': 'auth.register'})
         return jsonify({'success': False, 'error': 'An error occurred during registration'}), 500
 
 
@@ -107,7 +111,8 @@ def login():
         }), 200
         
     except Exception as e:
-        print(f"Login error: {str(e)}")
+        logger.exception("Login error")
+        capture_exception(e, {'route': 'auth.login'})
         return jsonify({'success': False, 'error': 'An error occurred during login'}), 500
 
 
@@ -150,7 +155,8 @@ def refresh():
         return jsonify({'success': True, 'access_token': access_token}), 200
         
     except Exception as e:
-        print(f"Token refresh error: {str(e)}")
+        logger.exception("Token refresh error")
+        capture_exception(e, {'route': 'auth.refresh'})
         return jsonify({'success': False, 'error': 'An error occurred during token refresh'}), 500
 
 
@@ -170,7 +176,8 @@ def logout(current_user):
         return jsonify({'success': True, 'message': 'Logout successful'}), 200
         
     except Exception as e:
-        print(f"Logout error: {str(e)}")
+        logger.exception("Logout error")
+        capture_exception(e, {'route': 'auth.logout', 'user_id': current_user.id})
         return jsonify({'success': False, 'error': 'An error occurred during logout'}), 500
 
 
@@ -210,7 +217,8 @@ def update_profile(current_user):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Profile update error: {str(e)}")
+        logger.exception("Profile update error")
+        capture_exception(e, {'route': 'auth.update_profile', 'user_id': current_user.id})
         return jsonify({'success': False, 'error': 'An error occurred during profile update'}), 500
 
 
@@ -245,5 +253,6 @@ def change_password(current_user):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Password change error: {str(e)}")
+        logger.exception("Password change error")
+        capture_exception(e, {'route': 'auth.change_password', 'user_id': current_user.id})
         return jsonify({'success': False, 'error': 'An error occurred during password change'}), 500
