@@ -2,8 +2,11 @@
 
 import { useEffect, useRef } from "react"
 
+import { useTheme } from "@/components/theme-provider"
+
 export function GradientBackground() {
     const canvasRef = useRef(null)
+    const { theme } = useTheme()
 
     useEffect(() => {
         const canvas = canvasRef.current
@@ -31,19 +34,19 @@ export function GradientBackground() {
                     x: canvas.width * 0.3 + Math.sin(time * 0.5) * 100,
                     y: canvas.height * 0.2 + Math.cos(time * 0.3) * 100,
                     radius: canvas.width * 0.4,
-                    color: "rgba(255, 255, 255, 0.02)",
+                    color: getComputedStyle(document.documentElement).getPropertyValue("--canvas-glow-primary").trim(),
                 },
                 {
                     x: canvas.width * 0.7 + Math.cos(time * 0.4) * 100,
                     y: canvas.height * 0.5 + Math.sin(time * 0.4) * 100,
                     radius: canvas.width * 0.5,
-                    color: "rgba(255, 255, 255, 0.01)",
+                    color: getComputedStyle(document.documentElement).getPropertyValue("--canvas-glow-secondary").trim(),
                 },
                 {
                     x: mouseX || canvas.width * 0.5,
                     y: mouseY || canvas.height * 0.5,
                     radius: canvas.width * 0.3,
-                    color: "rgba(255, 255, 255, 0.02)",
+                    color: getComputedStyle(document.documentElement).getPropertyValue("--canvas-glow-pointer").trim(),
                 },
             ]
 
@@ -57,7 +60,7 @@ export function GradientBackground() {
                 ctx.fillRect(0, 0, canvas.width, canvas.height)
             })
 
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.01)"
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--canvas-grid").trim()
             ctx.lineWidth = 1
 
             const gridSize = 100
@@ -97,17 +100,17 @@ export function GradientBackground() {
             window.removeEventListener("mousemove", handleMouseMove)
             cancelAnimationFrame(animationFrameId)
         }
-    }, [])
+    }, [theme])
 
     return (
         <>
             <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-70" style={{ mixBlendMode: "normal" }} />
 
-            <div className="fixed inset-0 bg-gradient-to-b from-[#0D1117] via-[#0D1117] to-[#0D1117] opacity-80 z-0" />
+            <div className="theme-page-backdrop fixed inset-0 opacity-80 z-0" />
 
             <div className="fixed inset-0 bg-[url('/noise.png')] opacity-[0.03] z-0 pointer-events-none" />
 
-            <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_#0D1117_70%)] z-0 pointer-events-none" />
+            <div className="theme-radial-vignette fixed inset-0 z-0 pointer-events-none" />
         </>
     )
 }

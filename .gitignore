@@ -27,3 +27,10 @@ data/
 
 # Instance folders
 instance*/
+
+# Node / Next.js
+node_modules/
+.next/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

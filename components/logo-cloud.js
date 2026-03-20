@@ -22,12 +22,12 @@ export function LogoCloud() {
           transition={{ duration: 0.5, delay: i * 0.1 }}
           className="relative group"
         >
-          <div className="absolute -inset-4 rounded-lg bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+          <div className="absolute -inset-4 rounded-lg theme-cta-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
           <div
-            className="h-8 bg-[#0D1117]/50 rounded-md flex items-center justify-center px-4 border border-white/10 group-hover:border-white/20 transition-all duration-300"
+            className="theme-panel h-8 rounded-md flex items-center justify-center px-4 border group-hover:border-border transition-all duration-300"
             style={{ width: logo.width }}
           >
-            <div className="text-white/40 font-medium group-hover:text-white/60 transition-colors duration-300">
+            <div className="theme-muted-text font-medium group-hover:text-foreground/70 transition-colors duration-300">
               {logo.name}
             </div>
           </div>

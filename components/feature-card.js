@@ -13,16 +13,16 @@ export function FeatureCard({ title, description, icon, children, index }) {
         >
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="flex items-center justify-center size-10 rounded-lg bg-white/5 text-[#9FEF00] group-hover:bg-white/10 transition-colors duration-300">
+                    <div className="theme-panel-strong theme-accent-text flex items-center justify-center size-10 rounded-lg group-hover:bg-accent transition-colors duration-300">
                         {icon}
                     </div>
                     <h3 className="text-xl font-semibold">{title}</h3>
                 </div>
-                <p className="text-white/70">{description}</p>
+                <p className="theme-muted-text">{description}</p>
             </div>
 
             <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-white/5 to-white/5 rounded-lg blur opacity-30 group-hover:opacity-40 transition duration-1000"></div>
+                <div className="absolute -inset-0.5 theme-cta-overlay rounded-lg blur opacity-30 group-hover:opacity-40 transition duration-1000"></div>
                 <div className="relative h-full">{children}</div>
             </div>
         </motion.div>
