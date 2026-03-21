@@ -45,3 +45,8 @@ def track_error(error: Exception, context: Optional[Dict[str, Any]] = None):
     logger.error(f"Error: {str(error)}", exc_info=True)
     if context:
         logger.error(f"Context: {context}")
+
+
+def capture_exception(error: Exception, context: Optional[Dict[str, Any]] = None):
+    """Stub - alias for track_error for backward compatibility"""
+    track_error(error, context)
