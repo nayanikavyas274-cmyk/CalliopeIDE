@@ -1,12 +1,15 @@
 import sys
 import pytest
 
-_STUBBED_MODS = ["server.utils.auth_utils", "server.models", "server.utils.monitoring"]
-_original_mods = {}
+_STUB_MODS = [
+    "server.utils.auth_utils",
+    "server.models",
+    "server.utils.monitoring",
+]
 
-@pytest.fixture(autouse=True, scope="session")
-def restore_stubbed_modules():
-    """Restore any stubbed modules after soroban test collection."""
+@pytest.fixture(autouse=True)
+def restore_stubs():
+    """Restore stubbed modules before each test to prevent contamination."""
     yield
-    for mod in _STUBBED_MODS:
+    for mod in _STUB_MODS:
         sys.modules.pop(mod, None)
