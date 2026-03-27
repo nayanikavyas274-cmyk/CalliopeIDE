@@ -12,7 +12,9 @@ import {
     MessageSquare,
     Send,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Github,
+    GitPullRequest
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -42,6 +44,86 @@ export default function IDEApp() {
     const [message, setMessage] = useState("")
     const [isMobile, setIsMobile] = useState(false)
     const chatMessagesRef = useRef(null)
+
+    // ── GitHub Push / PR state ────────────────────────────────────────────
+    const [githubModalOpen, setGithubModalOpen] = useState(false)
+    const [githubForm, setGithubForm] = useState({
+        token: "",
+        owner: "",
+        repo: "",
+        branch: "feature/calliope-changes",
+        baseBranch: "main",
+        filePath: "contract.rs",
+        commitMessage: "Update contract from CalliopeIDE",
+        createPR: false,
+        prTitle: "Update smart contract",
+        prBody: "",
+    })
+    const [githubStatus, setGithubStatus] = useState({ state: "idle", message: "", links: null })
+
+    const handleGithubSubmit = async () => {
+        setGithubStatus({ state: "pushing", message: "Pushing to GitHub…", links: null })
+        const code = CODE_LINES.map((l) => l.code).join("\n")
+        try {
+            const pushRes = await fetch("/api/github", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "push",
+                    token: githubForm.token,
+                    owner: githubForm.owner,
+                    repo: githubForm.repo,
+                    branch: githubForm.branch,
+                    baseBranch: githubForm.baseBranch,
+                    filePath: githubForm.filePath,
+                    content: code,
+                    commitMessage: githubForm.commitMessage,
+                }),
+            })
+            const pushData = await pushRes.json()
+            if (!pushRes.ok) {
+                setGithubStatus({ state: "error", message: pushData.error, links: null })
+                return
+            }
+
+            if (!githubForm.createPR) {
+                setGithubStatus({
+                    state: "success",
+                    message: `Pushed successfully! Commit: ${pushData.commit.slice(0, 7)}`,
+                    links: { file: pushData.fileUrl },
+                })
+                return
+            }
+
+            setGithubStatus({ state: "creating-pr", message: "Creating pull request…", links: null })
+            const prRes = await fetch("/api/github", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "pr",
+                    token: githubForm.token,
+                    owner: githubForm.owner,
+                    repo: githubForm.repo,
+                    branch: githubForm.branch,
+                    baseBranch: githubForm.baseBranch,
+                    prTitle: githubForm.prTitle,
+                    prBody: githubForm.prBody,
+                }),
+            })
+            const prData = await prRes.json()
+            if (!prRes.ok) {
+                setGithubStatus({ state: "error", message: prData.error, links: null })
+                return
+            }
+            setGithubStatus({
+                state: "success",
+                message: `PR #${prData.prNumber} created!`,
+                links: { file: pushData.fileUrl, pr: prData.prUrl },
+            })
+        } catch {
+            setGithubStatus({ state: "error", message: "Network error. Please try again.", links: null })
+        }
+    }
 
     // Detect mobile and auto-collapse panels accordingly
     useEffect(() => {
@@ -225,6 +307,27 @@ export default function IDEApp() {
                         >
                             <Play className="w-4 h-4" />
                         </Button>
+                        {/* Desktop: Push + PR */}
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => { setGithubStatus({ state: "idle", message: "", links: null }); setGithubModalOpen(true) }}
+                            className="hidden sm:inline-flex items-center gap-1 h-8 px-2 text-gray-400 hover:text-white"
+                            aria-label="Push to GitHub"
+                        >
+                            <Github className="w-4 h-4" />
+                            <span className="text-xs">Push</span>
+                        </Button>
+                        {/* Mobile icon-only */}
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => { setGithubStatus({ state: "idle", message: "", links: null }); setGithubModalOpen(true) }}
+                            aria-label="Push to GitHub"
+                            className="sm:hidden h-8 w-8 p-0 text-gray-400 hover:text-white"
+                        >
+                            <Github className="w-4 h-4" />
+                        </Button>
                         <Button
                             variant="ghost"
                             size="sm"
@@ -353,6 +456,237 @@ export default function IDEApp() {
                     </AnimatePresence>
                 </div>
             </div>
+
+            {/* ── GitHub Push / PR Modal ── */}
+            <AnimatePresence>
+                {githubModalOpen && (
+                    <motion.div
+                        key="github-modal-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+                        onClick={(e) => { if (e.target === e.currentTarget) setGithubModalOpen(false) }}
+                        aria-modal="true"
+                        role="dialog"
+                        aria-label="Push to GitHub"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="bg-[#161B22] border border-gray-700 rounded-xl w-full max-w-md shadow-2xl overflow-y-auto max-h-[90dvh]"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-700">
+                                <div className="flex items-center gap-2">
+                                    <Github className="w-5 h-5 text-white" />
+                                    <h2 className="text-sm font-semibold">Push to GitHub</h2>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setGithubModalOpen(false)}
+                                    aria-label="Close"
+                                    className="h-8 w-8 p-0 text-gray-400 hover:text-white"
+                                >
+                                    <X className="w-4 h-4" />
+                                </Button>
+                            </div>
+
+                            {/* Modal Body */}
+                            <div className="p-5 space-y-4">
+                                {/* Token */}
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-1.5">GitHub Personal Access Token</label>
+                                    <input
+                                        type="password"
+                                        value={githubForm.token}
+                                        onChange={(e) => setGithubForm((f) => ({ ...f, token: e.target.value }))}
+                                        placeholder="ghp_xxxxxxxxxxxx"
+                                        className="w-full bg-[#0D1117] border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600"
+                                        autoComplete="off"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Requires <code className="text-gray-400">contents:write</code> and <code className="text-gray-400">pull_requests:write</code> scopes.
+                                    </p>
+                                </div>
+
+                                {/* Owner / Repo */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1.5">Owner</label>
+                                        <input
+                                            type="text"
+                                            value={githubForm.owner}
+                                            onChange={(e) => setGithubForm((f) => ({ ...f, owner: e.target.value.trim() }))}
+                                            placeholder="your-username"
+                                            className="w-full bg-[#0D1117] border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1.5">Repository</label>
+                                        <input
+                                            type="text"
+                                            value={githubForm.repo}
+                                            onChange={(e) => setGithubForm((f) => ({ ...f, repo: e.target.value.trim() }))}
+                                            placeholder="my-repo"
+                                            className="w-full bg-[#0D1117] border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Branch / Base */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1.5">Push to branch</label>
+                                        <input
+                                            type="text"
+                                            value={githubForm.branch}
+                                            onChange={(e) => setGithubForm((f) => ({ ...f, branch: e.target.value.trim() }))}
+                                            placeholder="feature/my-branch"
+                                            className="w-full bg-[#0D1117] border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1.5">Base branch</label>
+                                        <input
+                                            type="text"
+                                            value={githubForm.baseBranch}
+                                            onChange={(e) => setGithubForm((f) => ({ ...f, baseBranch: e.target.value.trim() }))}
+                                            placeholder="main"
+                                            className="w-full bg-[#0D1117] border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* File path */}
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-1.5">File path in repo</label>
+                                    <input
+                                        type="text"
+                                        value={githubForm.filePath}
+                                        onChange={(e) => setGithubForm((f) => ({ ...f, filePath: e.target.value.trim() }))}
+                                        placeholder="src/contract.rs"
+                                        className="w-full bg-[#0D1117] border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600"
+                                    />
+                                </div>
+
+                                {/* Commit message */}
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-1.5">Commit message</label>
+                                    <input
+                                        type="text"
+                                        value={githubForm.commitMessage}
+                                        onChange={(e) => setGithubForm((f) => ({ ...f, commitMessage: e.target.value }))}
+                                        placeholder="Update contract from CalliopeIDE"
+                                        className="w-full bg-[#0D1117] border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600"
+                                    />
+                                </div>
+
+                                {/* Create PR checkbox */}
+                                <label className="flex items-center gap-2 cursor-pointer select-none">
+                                    <input
+                                        type="checkbox"
+                                        checked={githubForm.createPR}
+                                        onChange={(e) => setGithubForm((f) => ({ ...f, createPR: e.target.checked }))}
+                                        className="w-4 h-4 rounded accent-blue-500"
+                                    />
+                                    <span className="text-sm flex items-center gap-1.5">
+                                        <GitPullRequest className="w-4 h-4 text-gray-400" />
+                                        Create a Pull Request after push
+                                    </span>
+                                </label>
+
+                                {/* PR fields */}
+                                {githubForm.createPR && (
+                                    <div className="space-y-3 pl-3 border-l-2 border-blue-600">
+                                        <div>
+                                            <label className="block text-xs text-gray-400 mb-1.5">PR Title</label>
+                                            <input
+                                                type="text"
+                                                value={githubForm.prTitle}
+                                                onChange={(e) => setGithubForm((f) => ({ ...f, prTitle: e.target.value }))}
+                                                placeholder="Update smart contract"
+                                                className="w-full bg-[#0D1117] border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-400 mb-1.5">PR Description (optional)</label>
+                                            <textarea
+                                                value={githubForm.prBody}
+                                                onChange={(e) => setGithubForm((f) => ({ ...f, prBody: e.target.value }))}
+                                                placeholder="Describe your changes…"
+                                                rows={3}
+                                                className="w-full bg-[#0D1117] border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600 resize-none"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Status */}
+                                {githubStatus.state !== "idle" && (
+                                    <div
+                                        className={[
+                                            "rounded-lg px-4 py-3 text-sm",
+                                            githubStatus.state === "error"
+                                                ? "bg-red-900/40 border border-red-700 text-red-300"
+                                                : githubStatus.state === "success"
+                                                ? "bg-green-900/40 border border-green-700 text-green-300"
+                                                : "bg-blue-900/40 border border-blue-700 text-blue-300",
+                                        ].join(" ")}
+                                    >
+                                        <p>{githubStatus.message}</p>
+                                        {githubStatus.links && (
+                                            <div className="mt-2 flex flex-col gap-1">
+                                                {githubStatus.links.file && (
+                                                    <a href={githubStatus.links.file} target="_blank" rel="noopener noreferrer" className="underline text-xs">
+                                                        View file on GitHub ↗
+                                                    </a>
+                                                )}
+                                                {githubStatus.links.pr && (
+                                                    <a href={githubStatus.links.pr} target="_blank" rel="noopener noreferrer" className="underline text-xs">
+                                                        View Pull Request ↗
+                                                    </a>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-gray-700">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setGithubModalOpen(false)}
+                                    className="text-gray-400 hover:text-white"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    onClick={handleGithubSubmit}
+                                    disabled={["pushing", "creating-pr"].includes(githubStatus.state)}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 flex items-center gap-1.5 disabled:opacity-50"
+                                >
+                                    <Github className="w-4 h-4" />
+                                    {githubStatus.state === "pushing"
+                                        ? "Pushing…"
+                                        : githubStatus.state === "creating-pr"
+                                        ? "Creating PR…"
+                                        : githubForm.createPR
+                                        ? "Push & Create PR"
+                                        : "Push"}
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
